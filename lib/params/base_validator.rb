@@ -14,6 +14,8 @@ module Params
       raise e unless validator.dry_run?
     rescue StandardError => e
       Rollbar.error(e) if defined?(Rollbar)
+
+      raise e unless Rails.env.production?
     end
 
     attr_reader :params, :dry_run
@@ -50,9 +52,9 @@ module Params
       return if params.blank?
       return unless params.key?(key)
 
-      return if params[key].is_a?(type)
+      return if params[key].is_a?(type) || (type == Hash && params[key].is_a?(ActionController::Parameters))
 
-      type = 'Object' if type == 'Hash'
+      type = 'Object' if type == Hash
 
       raise_error(message || "#{key} must be a #{type}")
     end
