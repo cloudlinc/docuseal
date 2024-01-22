@@ -50,7 +50,7 @@ module Params
 
     def type(params, key, type, message: nil)
       return if params.blank?
-      return unless params.key?(key)
+      return if params[key].blank?
 
       return if params[key].is_a?(type) || (type == Hash && params[key].is_a?(ActionController::Parameters))
 
@@ -86,6 +86,7 @@ module Params
     def boolean(params, key, message: nil)
       return if params.blank?
       return unless params.key?(key)
+      return if params[key].nil?
 
       value = ActiveModel::Type::Boolean.new.cast(params[key])
 
